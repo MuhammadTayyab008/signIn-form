@@ -11,7 +11,6 @@ struct UserData: Identifiable {
     let firstName: String
     let lastName: String
     let email: String
-    //    let password: String
 }
 
 import SwiftUI
@@ -20,7 +19,6 @@ struct ContentView: View {
     @State private var firstName = ""
     @State private var lastName = ""
     @State private var email = ""
-    //    @State private var password = ""
     @State private var users: [UserData] = []
     @State private var navigateToNextPage = false
     @State private var showError = false
@@ -51,14 +49,6 @@ struct ContentView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 1.0))
                     )
-                
-                //                SecureField("Password", text: $password)
-                //                    .padding()
-                //                    .frame(width: 200, height: 40)
-                //                    .overlay(
-                //                        RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 1.0))
-                //                    )
-                
                 if showError {
                     Text("Please fill out all fields")
                         .foregroundColor(.red)
@@ -85,7 +75,7 @@ struct ContentView: View {
                     
                     Spacer()
                     
-                    NavigationLink(destination: nextView(users: users)) {
+                    NavigationLink(destination: NextView(users: users)) {
                         
                         Text("Next")
                     }
@@ -109,14 +99,33 @@ struct NextView: View {
                 .fontWeight(.bold)
             
             List(users) { user in
-                VStack(alignment: .leading) {
-                    Text("First Name: \(user.firstName)")
-                    Text("Last Name: \(user.lastName)")
-                    Text("Email: \(user.email)")
+                NavigationLink(destination: UserDetailView(user: user)) {
+                    Text("\(user.firstName)")
                 }
             }
             .padding()
         }
+    }
+}
+
+
+struct UserDetailView: View {
+    let user: UserData
+    var body: some View{
+        VStack(alignment: .leading) {
+            
+            Text("User Details")
+                .font(.largeTitle)
+                .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
+            Text("USER ID:  \(user.id)")
+            Text("FIRST NAME:  \(user.firstName)")
+            Text("LAST NAME:  \(user.lastName)")
+            Text("EMAIL:  \(user.email)")
+            Spacer()
+        }
+        .padding()
+        .navigationTitle("User Details")
+        
     }
 }
 
