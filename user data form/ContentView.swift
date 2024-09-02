@@ -13,6 +13,12 @@ struct UserData: Identifiable {
     let email: String
 }
 
+extension String {
+    var isValidEmail: Bool {
+        NSPredicate(format: "SELF MATCHES %@", "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}").evaluate(with: self)
+    }
+}
+
 import SwiftUI
 
 struct ContentView: View {
@@ -22,6 +28,8 @@ struct ContentView: View {
     @State private var users: [UserData] = []
     @State private var navigateToNextPage = false
     @State private var showError = false
+    @State private var forgroundColor : Color = .black
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -44,8 +52,22 @@ struct ContentView: View {
                     )
                 
                 TextField("Email", text: $email)
+                    .textContentType(.emailAddress)
+                    .disableAutocorrection(true)
+                    .textInputAutocapitalization(.never)
                     .padding()
                     .frame(width: 200, height: 40)
+//                    .foregroundColor(forgroundColor)
+                    .onChange(of: email) { oldValue, newValue in
+                        print("tayyab", oldValue, newValue  )
+                        if newValue.isValidEmail {
+                            forgroundColor = .blue
+                        } else {
+                            forgroundColor  = .red
+                        }
+                    }
+                
+//                    .background(email.isValidEmail ? .green : .black)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 1.0))
                     )
@@ -63,23 +85,19 @@ struct ContentView: View {
                             firstName = ""
                             lastName = ""
                             email = ""
-                            
                             showError = false
                         } else {
                             showError = true
                         }
-                        
                     }) {
                         Text("save")
                     }
                     
                     Spacer()
                     
-                    NavigationLink(destination: NextView(users: users)) {
-                        
+                    NavigationLink(destination: UsersList(users: users)) {
                         Text("Next")
                     }
-                    
                     .padding(.leading)
                 }
                 .frame(width: 200, height: 40)
@@ -89,7 +107,7 @@ struct ContentView: View {
     }
 }
 
-struct NextView: View {
+struct UsersList: View {
     let users: [UserData]
     
     var body: some View {
